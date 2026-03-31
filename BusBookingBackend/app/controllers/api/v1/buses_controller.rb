@@ -1,73 +1,71 @@
 module Api
   module V1
     class BusesController < BaseController
-      before_action :set_bus_operator
-      before_action :set_bus, only: [:show, :update, :destroy]
+      before_action :set_bus_operator, only: [:index, :show, :create, :update, :destroy]
 
       def index
-        buses = policy_scope(Bus).where(bus_operator_id: @bus_operator.id)
+        result = Bus::Index.call(bus_operator: @bus_operator, current_user: current_user)
         render json: {
           message: 'Buses fetched successfully',
-          data: buses.map { |bus| serialize_bus(bus) }
+          data: result[:models].map { |bus| serialize_bus(bus) }
         }, status: :ok
       end
 
       def show
-        authorize @bus
-        render json: {
-          message: 'Bus fetched successfully',
-          data: serialize_bus(@bus)
-        }, status: :ok
+        result = Bus::Show.call(params: params, bus_operator: @bus_operator, current_user: current_user)
+        if result.success?
+          render json: {
+            message: 'Bus fetched successfully',
+            data: serialize_bus(result[:model])
+          }, status: :ok
+        else
+          render json: { message: 'Unauthorized' }, status: :forbidden
+        end
       end
 
       def create
-        @bus = Bus.new(bus_params)
-        @bus.bus_operator = @bus_operator
-        authorize @bus
-
-        if @bus.save
+        result = Bus::Create.call(params: params, bus_operator: @bus_operator, current_user: current_user)
+        if result.success?
           render json: {
             message: 'Bus created successfully',
-            data: serialize_bus(@bus)
+            data: serialize_bus(result[:model])
           }, status: :created
         else
           render json: {
             message: 'Failed to create bus',
-            errors: @bus.errors.full_messages
+            errors: result[:model].errors.full_messages
           }, status: :unprocessable_entity
         end
       end
 
       def update
-        authorize @bus
-
-        if @bus.update(bus_params)
+        result = Bus::Update.call(params: params, bus_operator: @bus_operator, current_user: current_user)
+        if result.success?
           render json: {
             message: 'Bus updated successfully',
-            data: serialize_bus(@bus)
+            data: serialize_bus(result[:model])
           }, status: :ok
         else
           render json: {
             message: 'Failed to update bus',
-            errors: @bus.errors.full_messages
+            errors: result[:model].errors.full_messages
           }, status: :unprocessable_entity
         end
       end
 
       def destroy
-        authorize @bus
-        @bus.destroy
-        render json: { message: 'Bus deleted successfully' }, status: :ok
+        result = Bus::Destroy.call(params: params, bus_operator: @bus_operator, current_user: current_user)
+        if result.success?
+          render json: { message: 'Bus deleted successfully' }, status: :ok
+        else
+          render json: { message: 'Unauthorized' }, status: :forbidden
+        end
       end
 
       private
 
       def set_bus_operator
         @bus_operator = BusOperator.find(params[:bus_operator_id])
-      end
-
-      def set_bus
-        @bus = @bus_operator.buses.find(params[:id])
       end
 
       def bus_params

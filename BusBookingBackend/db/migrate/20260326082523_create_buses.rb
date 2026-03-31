@@ -4,7 +4,7 @@ class CreateBuses < ActiveRecord::Migration[8.1]
       t.references :bus_operator, null: false, foreign_key: true
       t.string :bus_no
       t.string :bus_name
-      t.integer :bus_type
+      t.string :bus_type
       t.integer :total_seats
       t.boolean :is_active, default: true
       t.timestamps

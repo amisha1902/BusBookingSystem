@@ -1,12 +1,18 @@
 module Api
   module V1
     module Auth
-      class SessionsController < ApplicationController
-        def create
-          user = User.find_by(email: params[:user][:email])
+      class SessionsController < BaseController
+        skip_before_action :authenticate_user!, only: [:create]
 
-          if user&.valid_password?(params[:user][:password])
+        def create
+          email = params[:email] || params.dig(:user, :email)
+          password = params[:password] || params.dig(:user, :password)
+
+          user = User.find_by(email: email)
+
+          if user&.valid_password?(password)
             token = user.generate_jwt
+
             render json: {
               message: 'User logged in successfully',
               token: token,
@@ -23,7 +29,7 @@ module Api
         end
 
         def destroy
-          render json: { message: 'Logged out successfully' }, status: :ok
+          render json: { message: 'User logged out successfully' }, status: :ok
         end
       end
     end

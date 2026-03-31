@@ -1,0 +1,29 @@
+.dashboard-page {
+  background-color: #f8f9fa;
+  min-height: 80vh;
+}
+
+.dashboard-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card h5 {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.dashboard-card button {
+  font-weight: 500;
+}
+
+.dashboard-card .text-white-50 {
+  opacity: 0.8;
+}

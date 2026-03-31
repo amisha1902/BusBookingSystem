@@ -1,0 +1,207 @@
+.ourbus-navbar {
+  background: linear-gradient(90deg, #cc1a1a 0%, #e63946 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 0;
+  border-bottom: 2px solid #8b0000;
+}
+
+.ourbus-navbar.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.ourbus-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: white !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0;
+}
+
+.ourbus-brand:hover {
+  transform: scale(1.05);
+  color: #fff !important;
+}
+
+.brand-icon {
+  font-size: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-name {
+  letter-spacing: 0.5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigation Links */
+.nav-link-custom {
+  color: white !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1rem !important;
+  border-radius: 4px;
+  position: relative;
+}
+
+.nav-link-custom:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  color: #fffacd !important;
+}
+
+.nav-link-custom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 2px;
+  background-color: #fffacd;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-link-custom:hover::after {
+  opacity: 0.8;
+}
+
+.nav-link-custom span {
+  font-size: 1.1rem;
+  display: inline-block;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.25);
+  margin: 0 0.5rem;
+  border: none;
+}
+
+.dropdown-menu-custom {
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 0;
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-menu-custom .dropdown-item {
+  color: #333;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-menu-custom .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+  background-color: #e63946;
+  color: white;
+  padding-left: 1.5rem;
+}
+
+.dropdown-menu-custom .dropdown-item span {
+  font-size: 1rem;
+  display: inline-block;
+}
+
+.dropdown-menu-custom .dropdown-divider {
+  margin: 0;
+  background-color: #eee;
+}
+
+.dropdown-menu-custom .dropdown-header {
+  color: #333;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* User Menu */
+.user-menu {
+  background-color: rgba(139, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem !important;
+}
+
+.user-menu:hover {
+  background-color: rgba(139, 0, 0, 0.35);
+}
+
+@media (max-width: 991.98px) {
+  .ourbus-navbar {
+    padding: 0.5rem 0;
+  }
+
+  .nav-link-custom {
+    padding: 0.75rem 0 !important;
+    font-size: 1rem;
+  }
+
+  .nav-divider {
+    display: none;
+  }
+
+  .navbar-collapse {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 8px 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .dropdown-menu-custom {
+    position: static;
+    float: none;
+    width: 100%;
+    margin-top: 0.5rem;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .user-menu {
+    background-color: transparent;
+  }
+
+  .user-menu:hover {
+    background-color: rgba(139, 0, 0, 0.2);
+  }
+}
+
+.ourbus-navbar a:focus,
+.ourbus-navbar button:focus {
+  outline: 2px solid #fffacd;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

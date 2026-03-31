@@ -58,7 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_083604) do
     t.string "bus_name"
     t.string "bus_no"
     t.bigint "bus_operator_id", null: false
-    t.integer "bus_type"
+    t.string "bus_type"
     t.datetime "created_at", null: false
     t.boolean "is_active", default: true
     t.integer "total_seats"
@@ -68,7 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_083604) do
 
   create_table "fares", force: :cascade do |t|
     t.float "base_fare_per_km"
-    t.integer "bus_type"
+    t.string "bus_type"
     t.datetime "created_at", null: false
     t.float "min_fare"
     t.bigint "route_id", null: false

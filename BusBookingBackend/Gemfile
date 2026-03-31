@@ -9,6 +9,8 @@ gem "devise-jwt"
 
 gem 'pundit'
 
+gem 'rack-cors'
+
 gem 'trailblazer-rails'
 gem 'trailblazer-operation'
 gem 'reform'
