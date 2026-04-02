@@ -6,3 +6,4 @@ class RouteStop < ApplicationRecord
   scope :drop_points,     -> { where(is_drop_point: true) }
   scope :ordered,         -> { order(:stop_order) }
 end
+ 

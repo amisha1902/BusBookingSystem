@@ -1,10 +1,9 @@
 class BusPolicy < ApplicationPolicy
-  def create?
-    user.operator? && 
-    user.bus_operator.present? &&
-    user.bus_operator.is_verified? &&
-    record.bus_operator_id == user.bus_operator.id
-  end
+ def create?
+  return false unless user.operator?
+  return false unless record.bus_operator.present?
+  user.bus_operators.exists?(id: record.bus_operator.id)
+ end
 
   def show?    = true
   def index?   = true
@@ -17,7 +16,7 @@ class BusPolicy < ApplicationPolicy
       if user.admin?
         scope.all
       elsif user.operator?
-        scope.where(bus_operator_id: user.bus_operator&.id)
+        scope.where(bus_operator_id: user.bus_operators.pluck(:id))
       else
         scope.active
       end
@@ -27,6 +26,6 @@ class BusPolicy < ApplicationPolicy
   private
 
   def owned_by_operator?
-    user.operator? && record.bus_operator_id == user.bus_operator&.id
+    user.operator? && record.bus_operator_id.in?(user.bus_operators.pluck(:id))
   end
 end

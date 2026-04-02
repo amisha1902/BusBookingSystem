@@ -12,3 +12,4 @@ class CreateRoutes < ActiveRecord::Migration[8.1]
     add_index :routes, [:source_city, :destination_city]
   end
 end
+  
