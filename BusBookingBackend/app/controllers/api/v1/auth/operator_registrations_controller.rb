@@ -7,8 +7,10 @@ module Api
           user.role = 'operator'
 
           if user.save
+            token = user.generate_jwt
             render json: {
               message: 'Operator registered successfully',
+              token: token,
               user: {
                 id:    user.id,
                 name:  user.name,

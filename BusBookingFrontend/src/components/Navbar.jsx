@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { logout } from '../api/authApi'
-import '../styles/navbar.css'
 
 export default function Navbar() {
   const navigate = useNavigate()
@@ -10,10 +9,23 @@ export default function Navbar() {
   const { isAuthenticated, user, logout: authLogout } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const authPages = ['/login', '/signup/passenger', '/signup/operator']
-  if (authPages.includes(location.pathname)) {
-    return null
-  }
+  const hideRoutes = [
+  '/login',
+  '/signup/passenger',
+  '/signup/operator',
+  '/operator/dashboard',
+  '/operator/bus-operators',
+  '/operator/buses',
+  '/operator/profile',
+  '/operator/setting',
+  '/operator/buses/all',
+]
+
+const hideNavbar =
+  hideRoutes.includes(location.pathname) ||
+  /^\/operator\/bus-operators\/\d+\/buses$/.test(location.pathname)
+
+if (hideNavbar) return null
 
   const handleLogout = async () => {
     setLoading(true)

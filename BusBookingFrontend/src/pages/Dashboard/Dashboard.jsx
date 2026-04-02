@@ -22,7 +22,7 @@ export default function Dashboard() {
       <div className="container">
         <div className="card border-0 shadow-sm">
           <div className="card-body p-5 text-center">
-            <h2>Dashboard</h2>
+            <h2></h2>
             <p className="text-muted">Unknown user type</p>
           </div>
         </div>

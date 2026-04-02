@@ -1,15 +1,26 @@
 import { useLocation } from 'react-router-dom'
-import '../styles/footer.css'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   const location = useLocation()
 
-  const authPages = ['/login', '/signup/passenger', '/signup/operator']
-  if (authPages.includes(location.pathname)) {
-    return null
-  }
+const hideRoutes = [
+  '/login',
+  '/signup/passenger',
+  '/signup/operator',
+  '/operator/dashboard',
+  '/operator/bus-operators',
+  '/operator/buses',
+  '/operator/profile',
+  '/operator/setting',
+  '/operator/buses/all',
+]
 
+const hideNavbar =
+  hideRoutes.includes(location.pathname) ||
+  /^\/operator\/bus-operators\/\d+\/buses$/.test(location.pathname)
+
+if (hideNavbar) return null
   return (
     <footer className="ourbus-footer">
       <div className="footer-main py-5">

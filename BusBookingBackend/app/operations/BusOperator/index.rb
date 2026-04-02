@@ -3,8 +3,7 @@ class BusOperator::Index < Trailblazer::Operation
   step :fetch_bus_operators
 
   def authorize(options, current_user:, **)
-    # Assuming index is allowed for authenticated users, or check policy
-    true # or policy_scope
+    true 
   end
 
   def fetch_bus_operators(options, current_user:, **)

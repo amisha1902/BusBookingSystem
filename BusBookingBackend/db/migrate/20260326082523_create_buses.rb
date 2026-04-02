@@ -5,6 +5,7 @@ class CreateBuses < ActiveRecord::Migration[8.1]
       t.string :bus_no
       t.string :bus_name
       t.string :bus_type
+      t.integer :deck
       t.integer :total_seats
       t.boolean :is_active, default: true
       t.timestamps

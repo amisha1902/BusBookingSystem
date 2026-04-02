@@ -3,7 +3,7 @@ class User < ApplicationRecord
 
   ROLES = %w[passenger operator admin].freeze
   enum :role, { passenger: 'passenger', operator: 'operator', admin: 'admin' }
-  has_one  :bus_operator, dependent: :destroy
+  has_many :bus_operators, dependent: :destroy
   has_many :bookings,     dependent: :destroy
   has_many :reviews,      dependent: :destroy
   has_many :locked_seats, class_name: 'TripSeat',

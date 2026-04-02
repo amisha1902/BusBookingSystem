@@ -7,8 +7,10 @@ module Api
           user.role = 'passenger'
 
           if user.save
+            token = user.generate_jwt
             render json: {
               message: 'Passenger registered successfully',
+              token: token,
               user: {
                 id:    user.id,
                 name:  user.name,

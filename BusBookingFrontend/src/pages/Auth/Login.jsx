@@ -66,13 +66,18 @@ export default function Login() {
       const response = await execute(() =>
         login(formData.email, formData.password)
       )
+      localStorage.setItem('token', response.token)
 
-      authLogin({
+      localStorage.setItem('user', JSON.stringify(response.user))
+
+      const userData = {
         id: response.user.id,
         email: response.user.email,
         role: response.user.role,
         name: response.user.name || response.user.company_name,
-      })
+      }
+
+      authLogin(userData)
 
       setAlert({
         type: 'success',
@@ -80,7 +85,8 @@ export default function Login() {
       })
 
       setTimeout(() => {
-        navigate('/dashboard')
+        const redirectPath = userData.role === 'operator' ? '/operator/dashboard' : '/dashboard'
+        navigate(redirectPath)
       }, 1500)
     } catch (error) {
       setAlert({

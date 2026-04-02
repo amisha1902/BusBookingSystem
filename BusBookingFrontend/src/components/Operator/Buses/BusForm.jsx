@@ -1,160 +1,74 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
-export default function BusForm({
-  onSubmit,
-  onCancel,
-  initialData = {
-    bus_name: '',
-    bus_no: '',
-    bus_type: 'ac_seater',
-    total_seats: 40,
-  },
-  isEditing = false,
-}) {
+export default function BusForm({ onSubmit, onCancel, initialData, isEditing }) {
   const [formData, setFormData] = useState(initialData)
   const [errors, setErrors] = useState({})
 
-  const busTypes = [
-    { value: 'ac_seater', label: 'AC Seater' },
-    { value: 'non_ac_seater', label: 'Non-AC Seater' },
-    { value: 'ac_sleeper', label: ' AC Sleeper' },
-    { value: 'non_ac_sleeper', label: ' Non-AC Sleeper' },
-  ]
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'total_seats' ? parseInt(value) : value,
-    }))
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }))
-    }
+  const seatLayouts = {
+    ac_seater: { rows: 10, cols: 3 },
+    non_ac_seater: { rows: 10, cols: 3 },
+    ac_sleeper: { rows: 5, cols: 3 },
+    non_ac_sleeper: { rows: 5, cols: 3 }
   }
 
-  const validateForm = () => {
-    const newErrors = {}
-
-    if (!formData.bus_name.trim()) {
-      newErrors.bus_name = 'Bus name is required'
-    }
-
-    if (!formData.bus_no.trim()) {
-      newErrors.bus_no = 'Bus number is required'
-    }
-
-    if (!formData.bus_type) {
-      newErrors.bus_type = 'Bus type is required'
-    }
-
-    if (!formData.total_seats || formData.total_seats < 10) {
-      newErrors.total_seats = 'Total seats must be at least 10'
-    }
-
-    if (formData.total_seats > 100) {
-      newErrors.total_seats = 'Total seats cannot exceed 100'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  const calculatedSeats = useMemo(() => {
+    const layout = seatLayouts[formData.bus_type]
+    return layout ? layout.rows * layout.cols * (formData.deck || 1) : 0
+  }, [formData])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (validateForm()) {
-      onSubmit(formData)
-    }
+    onSubmit(formData)
   }
 
   return (
-    <div className="bus-form card mb-4 border-0 shadow-sm">
+    <div className="card border-0 shadow-sm mb-4">
       <div className="card-body">
-        <h5 className="mb-3">
-          {isEditing ? '✏️ Edit Bus' : '➕ Add Bus'}
+
+        <h5 className="fw-semibold mb-3">
+          {isEditing ? 'Edit Bus' : 'Add Bus'}
         </h5>
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label fw-500">Bus Name</label>
-            <input
-              type="text"
-              className={`form-control ${errors.bus_name ? 'is-invalid' : ''}`}
-              name="bus_name"
-              value={formData.bus_name}
-              onChange={handleChange}
-              placeholder="e.g., Premium Express"
-            />
-            {errors.bus_name && (
-              <div className="invalid-feedback d-block">{errors.bus_name}</div>
-            )}
-          </div>
+          <input className="form-control mb-3"
+            placeholder="Bus Name"
+            value={formData.bus_name}
+            onChange={(e) => setFormData({ ...formData, bus_name: e.target.value })}
+          />
 
-          <div className="mb-3">
-            <label className="form-label fw-500">Bus Number</label>
-            <input
-              type="text"
-              className={`form-control ${errors.bus_no ? 'is-invalid' : ''}`}
-              name="bus_no"
-              value={formData.bus_no}
-              onChange={handleChange}
-              placeholder="e.g., MH02AB1234"
-            />
-            {errors.bus_no && (
-              <div className="invalid-feedback d-block">{errors.bus_no}</div>
-            )}
-          </div>
+          <input className="form-control mb-3"
+            placeholder="Bus Number"
+            value={formData.bus_no}
+            onChange={(e) => setFormData({ ...formData, bus_no: e.target.value })}
+          />
 
-          <div className="mb-3">
-            <label className="form-label fw-500">Bus Type</label>
-            <select
-              className={`form-select ${errors.bus_type ? 'is-invalid' : ''}`}
-              name="bus_type"
-              value={formData.bus_type}
-              onChange={handleChange}
-            >
-              <option value="">-- Select Bus Type --</option>
-              {busTypes.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-            {errors.bus_type && (
-              <div className="invalid-feedback d-block">{errors.bus_type}</div>
-            )}
-          </div>
+          <select className="form-select mb-3"
+            value={formData.bus_type}
+            onChange={(e) => setFormData({ ...formData, bus_type: e.target.value })}
+          >
+            <option value="ac_seater">AC Seater</option>
+            <option value="non_ac_seater">Non-AC Seater</option>
+            <option value="ac_sleeper">AC Sleeper</option>
+            <option value="non_ac_sleeper">Non-AC Sleeper</option>
+          </select>
 
-          <div className="mb-3">
-            <label className="form-label fw-500">Total Seats</label>
-            <input
-              type="number"
-              className={`form-control ${errors.total_seats ? 'is-invalid' : ''}`}
-              name="total_seats"
-              value={formData.total_seats}
-              onChange={handleChange}
-              min="10"
-              max="100"
-              placeholder="Enter number of seats"
-            />
-            {errors.total_seats && (
-              <div className="invalid-feedback d-block">{errors.total_seats}</div>
-            )}
-          </div>
+          <select className="form-select mb-3"
+            value={formData.deck}
+            onChange={(e) => setFormData({ ...formData, deck: Number(e.target.value) })}
+          >
+            <option value="1">Single Deck</option>
+            <option value="2">Double Deck</option>
+          </select>
 
-          <div className="d-flex gap-2">
-            <button type="submit" className="btn btn-primary flex-grow-1">
-              {isEditing ? 'Update Bus' : 'Create Bus'}
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onCancel}
-            >
-              Cancel
+          <input className="form-control mb-3" value={calculatedSeats} disabled />
+
+          <div className="d-flex gap-2 justify-content-end">
+            <button className="btn btn-light" onClick={onCancel}>Cancel</button>
+            <button className="btn btn-primary">
+              {isEditing ? 'Update' : 'Create'}
             </button>
           </div>
+
         </form>
       </div>
     </div>

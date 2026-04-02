@@ -18,7 +18,10 @@ module Api
             data: serialize_bus_operator(result[:model])
           }, status: :ok
         else
-          render json: { message: 'Unauthorized' }, status: :forbidden
+          render json: {
+            message: 'Failed to fetch bus operator',
+            errors: result[:model].errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
 
@@ -57,7 +60,10 @@ module Api
         if result.success?
           render json: { message: 'Bus operator deleted successfully' }, status: :ok
         else
-          render json: { message: 'Unauthorized' }, status: :forbidden
+          render json: {
+            message: 'Failed to delete bus operator',
+            errors: result[:model].errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
 

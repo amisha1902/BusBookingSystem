@@ -1,4 +1,3 @@
-/* App Layout */
 #root {
   display: flex;
   flex-direction: column;
@@ -10,14 +9,12 @@ main {
   flex: 1;
 }
 
-/* Overall Page Layout */
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Hero Section - Red Bus Style */
 .hero-section {
   background: linear-gradient(135deg, #cc1a1a 0%, #e63946 50%, #f77f88 100%);
   color: white;
@@ -205,7 +202,6 @@ section h2 {
   font-size: 0.9rem;
 }
 
-/* Stats Section */
 .stats-section {
   background: linear-gradient(135deg, #cc1a1a 0%, #e63946 100%);
   color: white;
@@ -229,7 +225,6 @@ section h2 {
   opacity: 0.95;
 }
 
-/* CTA Section */
 .cta-section {
   background: white;
   padding: 3rem 0;
@@ -254,7 +249,6 @@ section h2 {
   font-size: 1.05rem;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .hero-section {
     padding: 2rem 0;

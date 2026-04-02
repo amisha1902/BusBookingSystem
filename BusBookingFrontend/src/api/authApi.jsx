@@ -21,7 +21,7 @@ export const login = async (email, password) => {
   })
 
   if (response.data.token) {
-    localStorage.setItem('authToken', response.data.token)
+    localStorage.setItem('token', response.data.token)
   }
 
   if (response.data.user) {
@@ -35,7 +35,7 @@ export const logout = async () => {
   try {
     await axiosInstance.delete('/auth/sign_out')
   } finally {
-    localStorage.removeItem('authToken')
+    localStorage.removeItem('token')
     localStorage.removeItem('user')
   }
 

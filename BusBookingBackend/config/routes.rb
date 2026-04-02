@@ -9,9 +9,18 @@ Rails.application.routes.draw do
         post   'sign_in',            to: 'sessions#create'
         delete 'sign_out',           to: 'sessions#destroy'
       end
-    resources :bus_operators, only: [:index, :create, :show, :update, :destroy] do
-      resources :buses, only: [:index, :create, :show, :update, :destroy]
-    end
+      get 'buses/all', to: 'buses#all_for_operator'
+      
+      resources :bus_operators, only: [:index, :create, :show, :update, :destroy] do
+        resources :buses, only: [:index, :create, :show, :update, :destroy] do
+          member do
+            get :seat_layout
+          end
+          collection do
+            get :seat_types_info
+          end
+        end
+      end
     end
   end
 end

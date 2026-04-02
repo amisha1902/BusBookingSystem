@@ -1,26 +1,51 @@
 class BusOperator::Update < Trailblazer::Operation
-    PERMITTED_PARAMS = [:company_name, :license_no, :contact_email]
+  PERMITTED_PARAMS = [:company_name, :license_no, :contact_email]
+
   step :find_model
-  step :authorize
-  step :validate
+  step :authorize_user
+  step :assign_attributes
+  step :validate_model
   step :persist
 
   def find_model(ctx, params:, **)
-    ctx[:model] = BusOperator.find(params[:id])
+    ctx[:model] = BusOperator.find_by(id: params[:id])
+    if ctx[:model].nil?
+      ctx[:model] = BusOperator.new
+      ctx[:model].errors.add(:base, "Bus operator not found")
+      return false
+    end
+    true
+  rescue StandardError => e
+    ctx[:model] = BusOperator.new
+    ctx[:model].errors.add(:base, "Error finding operator: #{e.message}")
+    false
   end
 
-  def authorize(ctx, current_user:, **)
-    policy = BusOperatorPolicy.new(current_user, ctx[:model])
-    policy.update?
+  def authorize_user(ctx, current_user:, **)
+    unless current_user&.id == ctx[:model].user_id || current_user&.admin?
+      ctx[:model].errors.add(:base, "You do not have permission to update this operator")
+      return false
+    end
+    true
   end
 
-  def validate(ctx, params:, **)
+  def assign_attributes(ctx, params:, **)
     permitted = params[:bus_operator].permit(*PERMITTED_PARAMS)
     ctx[:model].assign_attributes(permitted)
-    ctx[:model].valid?
+    true
+  end
+
+  def validate_model(ctx, **)
+    unless ctx[:model].valid?
+      return false
+    end
+    true
   end
 
   def persist(ctx, **)
-    ctx[:model].save
+    unless ctx[:model].save
+      return false
+    end
+    true
   end
 end

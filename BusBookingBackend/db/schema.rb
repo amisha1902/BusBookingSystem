@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_26_083604) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_31_092004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_083604) do
     t.bigint "bus_operator_id", null: false
     t.string "bus_type"
     t.datetime "created_at", null: false
+    t.integer "deck", default: 1, null: false
     t.boolean "is_active", default: true
     t.integer "total_seats"
     t.datetime "updated_at", null: false
@@ -143,10 +144,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_26_083604) do
     t.bigint "bus_id", null: false
     t.integer "col_number"
     t.datetime "created_at", null: false
-    t.integer "deck"
+    t.string "deck"
     t.integer "row_number"
     t.string "seat_number"
-    t.integer "seat_type"
+    t.string "seat_type"
     t.datetime "updated_at", null: false
     t.index ["bus_id"], name: "index_seats_on_bus_id"
   end
