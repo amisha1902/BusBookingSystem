@@ -1,6 +1,7 @@
 module Api
   module V1
     class BusesController < BaseController
+      skip_before_action :authenticate_user!, only: [:seat_layout]
       before_action :set_bus_operator, only: [:index, :create, :show, :update, :destroy, :seat_layout]
 
       def index

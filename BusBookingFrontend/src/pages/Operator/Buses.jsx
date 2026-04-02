@@ -95,7 +95,6 @@ const Buses = () => {
     <div style={{ background: '#f6f7fb', minHeight: '100vh' }}>
       <div className="container-fluid p-4">
 
-        {/* Header */}
         <div className="mb-4">
           <h3 className="fw-bold mb-1" style={{ color: '#2c3e50' }}>
             🚌 All Buses
@@ -103,7 +102,6 @@ const Buses = () => {
           <p className="text-muted">Manage buses across operators</p>
         </div>
 
-        {/* Error */}
         {error && (
           <div className="alert d-flex justify-content-between align-items-center"
             style={{ background: '#fdecea', color: '#b71c1c', border: '1px solid #f5c6cb' }}>
@@ -112,7 +110,6 @@ const Buses = () => {
           </div>
         )}
 
-        {/* Filters */}
         <div className="row mb-4">
           <div className="col-md-8 mb-2">
             <input
@@ -141,7 +138,6 @@ const Buses = () => {
           </div>
         </div>
 
-        {/* Loading */}
         {loading ? (
           <div className="text-center py-5">
             <div className="spinner-border" style={{ color: '#4a6cf7' }} />
@@ -208,7 +204,6 @@ const Buses = () => {
                         <span>{bus.deck == 2 ? 'Double' : 'Single'} Deck</span>
                       </div>
 
-                      {/* Seat Layout */}
                       {bus.seats?.length > 0 && (
                         <div className="mt-3">
                           <button
