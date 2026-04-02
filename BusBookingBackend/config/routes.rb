@@ -21,6 +21,22 @@ Rails.application.routes.draw do
           end
         end
       end
+
+      resources :routes, only: [:index, :create, :show, :update] do
+        resources :route_stops, only: [:index, :create]
+        resources :fares,       only: [:index, :create]
+      end
+
+      resources :trips, only: [:index, :create, :show] do
+        member do
+          patch :cancel
+          get   :boarding_points
+          get   :drop_points
+        end
+        collection do
+          get :search
+        end
+      end
     end
   end
 end

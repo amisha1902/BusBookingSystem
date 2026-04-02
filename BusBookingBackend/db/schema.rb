@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_31_092004) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_02_034142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -72,6 +72,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_092004) do
     t.string "bus_type"
     t.datetime "created_at", null: false
     t.float "min_fare"
+    t.bigint "operator_id"
     t.bigint "route_id", null: false
     t.float "service_fee"
     t.float "tax_pct"
@@ -172,7 +173,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_092004) do
     t.datetime "created_at", null: false
     t.datetime "departure_time"
     t.bigint "route_id", null: false
-    t.integer "status"
+    t.integer "status", default: 0
     t.date "travel_start_date"
     t.datetime "updated_at", null: false
     t.index ["bus_id"], name: "index_trips_on_bus_id"

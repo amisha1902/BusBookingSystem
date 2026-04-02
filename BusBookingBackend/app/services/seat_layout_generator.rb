@@ -29,9 +29,6 @@ class SeatLayoutGenerator
     @layout = SEAT_LAYOUTS[bus_type_sym]
   end
 
-  # =========================
-  # GENERATE SEATS (SAFE)
-  # =========================
   def generate
     unless @layout
       Rails.logger.warn "Invalid bus type: #{@bus.bus_type}"

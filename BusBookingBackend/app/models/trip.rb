@@ -5,13 +5,8 @@ class Trip < ApplicationRecord
   has_many :bookings, dependent: :destroy
   has_many :reviews, dependent: :destroy
 
-  enum :status, {
-    scheduled: "scheduled",
-    cancelled: "cancelled",
-    completed: "completed"
-  }
-
-  validates :travel_startdate, :departure_time, :arrival_time, presence: true
+ enum :status, { scheduled: 0, cancelled: 1, completed: 2 }
+  validates :travel_start_date, :departure_time, :arrival_time, presence: true
   validate  :arrival_must_be_after_departure
   scope :upcoming, -> {
     where(status: 'scheduled').where('departure_time > ?', Time.current)
@@ -20,6 +15,9 @@ class Trip < ApplicationRecord
   after_create :generate_trip_seats
 
   private
+  def set_default_status
+    self.status ||= :scheduled
+  end
   def arrival_must_be_after_departure
     return unless departure_time && arrival_time
     if arrival_time <= departure_time
