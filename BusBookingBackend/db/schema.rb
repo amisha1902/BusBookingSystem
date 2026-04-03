@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_02_034142) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_02_183035) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,7 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_02_034142) do
     t.bigint "boarding_stop_id"
     t.datetime "created_at", null: false
     t.bigint "drop_stop_id"
-    t.integer "status", default: 0
+    t.integer "status", default: 0, null: false
     t.float "total_price"
     t.bigint "trip_id", null: false
     t.datetime "updated_at", null: false
@@ -159,7 +159,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_02_034142) do
     t.integer "locked_by_user"
     t.bigint "seat_id", null: false
     t.float "seat_price"
-    t.integer "status"
+    t.integer "status", default: 0, null: false
     t.bigint "trip_id", null: false
     t.datetime "updated_at", null: false
     t.index ["seat_id"], name: "index_trip_seats_on_seat_id"
