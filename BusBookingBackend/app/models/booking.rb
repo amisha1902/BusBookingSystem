@@ -4,13 +4,7 @@ class Booking < ApplicationRecord
   belongs_to :boarding_stop, class_name: 'RouteStop', foreign_key: :boarding_stop_id
   belongs_to :drop_stop,     class_name: 'RouteStop', foreign_key: :drop_stop_id
 
-  enum :status, {
-    pending:   'pending',
-    confirmed: 'confirmed',
-    cancelled: 'cancelled',
-    failed:    'failed'
-  }
-
+   enum :status, { pending: 0, confirmed: 1, cancelled: 2, failed: 3 }  
   has_many :booking_seats, dependent: :destroy
   has_many :trip_seats,    through: :booking_seats
   has_many :passengers,    through: :booking_seats

@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :bookings,     dependent: :destroy
   has_many :reviews,      dependent: :destroy
   has_many :locked_seats, class_name: 'TripSeat',
-                          foreign_key: :locked_by_user_id,
+                          foreign_key: :locked_by_user,
                           dependent: :nullify
   validates :name,  presence: true
   validates :phone, presence: true, uniqueness: true

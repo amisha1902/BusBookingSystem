@@ -33,7 +33,7 @@ class Trip < ApplicationRecord
       trip_seats.create!(
         seat:       seat,
         seat_price: price.round(2),
-        status:     'available'
+        status:     0
       )
     end
     update_column(:available_seats, bus.seats.count)

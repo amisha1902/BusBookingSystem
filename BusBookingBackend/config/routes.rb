@@ -9,8 +9,9 @@ Rails.application.routes.draw do
         post   'sign_in',            to: 'sessions#create'
         delete 'sign_out',           to: 'sessions#destroy'
       end
+
       get 'buses/all', to: 'buses#all_for_operator'
-      
+
       resources :bus_operators, only: [:index, :create, :show, :update, :destroy] do
         resources :buses, only: [:index, :create, :show, :update, :destroy] do
           member do
@@ -36,7 +37,16 @@ Rails.application.routes.draw do
         collection do
           get :search
         end
+        resources :reviews, only: [:create]
       end
+
+      resources :bookings, only: [:create, :index, :show] do
+        member do
+          patch :cancel
+        end
+      end
+
+      resources :payments, only: [:create]
     end
   end
 end
