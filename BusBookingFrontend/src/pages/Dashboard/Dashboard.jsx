@@ -1,5 +1,4 @@
 import { useAuth } from '../../hooks/useAuth.jsx'
-import { USER_TYPES } from '../../utils/Constants'
 import PassengerDashboard from './PassengerDashboard.jsx'
 import OperatorDashboard from './OperatorDashboard.jsx'
 

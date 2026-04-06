@@ -85,8 +85,7 @@ export default function Login() {
       })
 
       setTimeout(() => {
-        const redirectPath = userData.role === 'operator' ? '/operator/dashboard' : '/dashboard'
-        navigate(redirectPath)
+        navigate('/')
       }, 1500)
     } catch (error) {
       setAlert({
@@ -122,9 +121,8 @@ export default function Login() {
                     <label className="form-label fw-500">Email Address</label>
                     <input
                       type="email"
-                      className={`form-control form-control-lg ${
-                        errors.email ? 'is-invalid' : ''
-                      }`}
+                      className={`form-control form-control-lg ${errors.email ? 'is-invalid' : ''
+                        }`}
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
@@ -141,9 +139,8 @@ export default function Login() {
                     <label className="form-label fw-500">Password</label>
                     <input
                       type="password"
-                      className={`form-control form-control-lg ${
-                        errors.password ? 'is-invalid' : ''
-                      }`}
+                      className={`form-control form-control-lg ${errors.password ? 'is-invalid' : ''
+                        }`}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}

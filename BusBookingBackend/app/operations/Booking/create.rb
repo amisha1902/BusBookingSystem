@@ -10,91 +10,188 @@ class Booking::Create < Trailblazer::Operation
 
   def find_trip(ctx, params:, **)
     ctx[:trip] = Trip.find_by(id: params[:trip_id])
-    ctx[:trip].present?
+    
+    unless ctx[:trip].present?
+      ctx[:error] = "Trip not found with ID: #{params[:trip_id]}"
+      return false
+    end
+    
+    true
   end
 
   def lock_seats(ctx, params:, trip:, current_user:, **)
-    requested = trip.trip_seats.where(id: params[:seat_ids])
-    available_requested = requested.available
+  seat_ids = Array(params[:seat_ids])
 
-    if available_requested.count == params[:seat_ids].count
-      available_requested.update_all(
-        status: 1,
-        locked_by_user: current_user.id,
-        lock_expiry_time: 15.minutes.from_now
+  unless seat_ids.any?
+    ctx[:error] = "No seats selected"
+    return false
+  end
+
+  # Find all requested seats
+  requested = trip.trip_seats.where(id: seat_ids)
+
+  # Verify all requested seats exist
+  if requested.count != seat_ids.count
+    missing_ids = seat_ids - requested.pluck(:id)
+    ctx[:error] = "Seats #{missing_ids.join(', ')} not found on this trip"
+    return false
+  end
+
+  # Check availability (status 0 = available)
+  available_requested = requested.where(status: 0)
+
+  if available_requested.count != seat_ids.count
+    unavailable_ids = requested.where.not(id: available_requested.pluck(:id)).pluck(:id)
+    ctx[:error] = "Seats #{unavailable_ids.join(', ')} are already taken or locked"
+    return false
+  end
+
+  # Lock the available seats
+  available_requested.update_all(
+    status: 1,
+    locked_by_user: current_user.id,
+    lock_expiry_time: 15.minutes.from_now
+  )
+
+  # ← RELOAD after update — don't use old scope with status: 0
+  ctx[:locked_seats] = trip.trip_seats.where(id: seat_ids).to_a
+  true
+rescue => e
+  ctx[:error] = "Error locking seats: #{e.message}"
+  false
+end
+
+  def calculate_total(ctx, trip:, params:, locked_seats:, **)
+  boarding = RouteStop.find_by(id: params[:boarding_stop_id])
+  drop = RouteStop.find_by(id: params[:drop_stop_id])
+
+  unless boarding && drop
+    ctx[:error] = "Invalid boarding or drop point selected"
+    return false
+  end
+
+  # Distance travelled only
+  dist_boarding = boarding.km_from_source.to_i
+  dist_drop = drop.km_from_source.to_i
+  distance_travelled = (dist_drop - dist_boarding).abs
+  ctx[:distance] = distance_travelled
+
+  total = 0
+  locked_seats.each do |seat|
+    base_multiplier = seat.seat_price.to_f / trip.route.total_distance_km
+    # seat_price was originally full‑route fare, so divide by total distance to get per‑km rate
+    seat_total = base_multiplier * distance_travelled
+
+    if seat_total <= 0
+      ctx[:error] = "Invalid seat price for seat #{seat.seat_id}"
+      return false
+    end
+
+    total += seat_total
+  end
+
+  ctx[:total_price] = total.round(2)
+  true
+rescue => e
+  ctx[:error] = "Error calculating total: #{e.message}"
+  false
+end
+
+  def create_booking(ctx, current_user:, trip:, params:, total_price:, **)
+    begin
+      ctx[:booking] = Booking.create!(
+        user: current_user,
+        trip: trip,
+        boarding_stop_id: params[:boarding_stop_id],
+        drop_stop_id: params[:drop_stop_id],
+        total_price: total_price,
+        status: :pending
       )
-      ctx[:locked_seats] = trip.trip_seats.where(id: params[:seat_ids]).to_a
       true
-    else
-      unavailable_ids = requested.where.not(id: available_requested.map(&:id)).pluck(:id)
-      ctx[:error] = "Seats #{unavailable_ids.join(', ')} are already taken or locked"
+    rescue => e
+      ctx[:error] = "Error creating booking: #{e.message}"
       false
     end
   end
 
-  def calculate_total(ctx, trip:, params:, locked_seats:, **)
-    boarding = RouteStop.find(params[:boarding_stop_id])
-    drop     = RouteStop.find(params[:drop_stop_id])
-    distance = (drop.km_from_source - boarding.km_from_source).abs
-
-    total = locked_seats.sum { |seat| seat.seat_price }
-    ctx[:total_price] = total
-    true
-  end
-
-  def create_booking(ctx, current_user:, trip:, params:, total_price:, **)
-    ctx[:booking] = Booking.create!(
-      user: current_user,
-      trip: trip,
-      boarding_stop_id: params[:boarding_stop_id],
-      drop_stop_id: params[:drop_stop_id],
-      total_price: total_price,
-      status: :pending
-    )
-    true
-  rescue => e
-    ctx[:error] = e.message
-    false
-  end
-
   def create_booking_seats(ctx, booking:, locked_seats:, params:, **)
-    passengers = params[:passengers] || []
-    passengers.zip(locked_seats).each do |passenger_params, trip_seat|
-      passenger = Passenger.create!(passenger_params)
-      BookingSeat.create!(
-        booking: booking,
-        trip_seat: trip_seat,
-        passenger: passenger,
-        seat_price: trip_seat.seat_price
-      )
+    passengers = Array(params[:passengers])
+
+    # Verify passenger count matches seat count
+    if passengers.count != locked_seats.count
+      ctx[:error] = "Passenger count (#{passengers.count}) must match seat count (#{locked_seats.count})"
+      return false
     end
-    true
-  rescue => e
-    ctx[:error] = e.message
-    false
+
+    begin
+      passengers.zip(locked_seats).each_with_index do |(passenger_params, trip_seat), index|
+        # Validate passenger data
+        unless passenger_params[:name].present?
+          ctx[:error] = "Passenger #{index + 1}: Name is required"
+          return false
+        end
+
+        unless passenger_params[:age].present? && passenger_params[:age].to_i > 0
+          ctx[:error] = "Passenger #{index + 1}: Valid age is required"
+          return false
+        end
+
+        unless passenger_params[:gender].present?
+          ctx[:error] = "Passenger #{index + 1}: Gender is required"
+          return false
+        end
+
+        # Create passenger record
+        passenger = Passenger.create!(
+          name: passenger_params[:name],
+          age: passenger_params[:age],
+          gender: passenger_params[:gender]
+        )
+
+        # Create booking seat record
+        BookingSeat.create!(
+          booking: booking,
+          trip_seat: trip_seat,
+          passenger: passenger,
+          seat_price: trip_seat.seat_price
+        )
+      end
+
+      true
+    rescue => e
+      ctx[:error] = "Error creating booking seats: #{e.message}"
+      false
+    end
   end
 
   def create_payment(ctx, booking:, total_price:, **)
-    ctx[:payment] = Payment.create!(
-      booking: booking,
-      amount: total_price,
-      status: :pending
-    )
-    true
-  rescue => e
-    ctx[:error] = e.message
-    false
+    begin
+      ctx[:payment] = Payment.create!(
+        booking: booking,
+        amount: total_price,
+        status: :pending
+      )
+      true
+    rescue => e
+      ctx[:error] = "Error creating payment: #{e.message}"
+      false
+    end
   end
 
   def release_locks_on_failure(ctx, trip:, current_user:, **)
-    trip.trip_seats.where(locked_by_user: current_user.id, status: 1).update_all(
-      status: 0,
+    # Release seat locks on failure
+    trip.trip_seats.where(
+      locked_by_user: current_user.id,
+      status: 1  # Only release locked seats
+    ).update_all(
+      status: 0,  # Mark as available
       locked_by_user: nil,
-      lock_expiry_time: nil 
+      lock_expiry_time: nil
     )
   end
 
   def collect_errors(ctx, error:, **)
+    # Collect all error messages
     ctx[:errors] = Array(error)
   end
 end

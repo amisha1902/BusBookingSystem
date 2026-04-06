@@ -17,8 +17,8 @@ class Trip < ApplicationRecord
   private
   def set_default_status
     self.status ||= :scheduled
-  end
-  def arrival_must_be_after_departure
+  end    
+  def arrival_must_be_after_departure       
     return unless departure_time && arrival_time
     if arrival_time <= departure_time
       errors.add(:arrival_time, "must be after departure time")

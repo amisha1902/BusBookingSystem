@@ -7,7 +7,6 @@ import Home from './pages/Home/Home.jsx'
 import Login from './pages/Auth/Login.jsx'
 import PassengerSignup from './pages/Auth/PassengerSignup.jsx'
 import OperatorSignup from './pages/Auth/OperatorSignup.jsx'
-import PassengerDashboardPage from './pages/Dashboard/PassengerDashboard.jsx'
 import { useAuth } from './hooks/useAuth.jsx'
 import './styles/global.css'
 
@@ -15,9 +14,17 @@ import OperatorLayout from './pages/Operator/Layout.jsx'
 import OperatorDashboard from './pages/Operator/Dashboard.jsx'
 import OperatorBusOperators from './pages/Operator/BusOperators.jsx'
 import OperatorBuses from './pages/Operator/OperatorBuses.jsx'
-import Buses from './pages/Operator/Buses.jsx' //---all buses page
+import Buses from './pages/Operator/Buses.jsx'
 import OperatorProfile from './pages/Operator/Profile.jsx'
 
+import PassengerDashboard from './pages/Passenger/PassengerDashboard'
+import TripDetails from './pages/Passenger/TripDetails'
+import BookingDetails from './pages/Passenger/BookingDetails'
+import PassengerProfile from './pages/Passenger/PassengerProfile'
+import PassengerSearchResults from './pages/Passenger/PassengerSearchResult.jsx'
+import BoardingDropPage from './pages/Passenger/BoardingDropPage.jsx'
+import PassengerDetailsPage from './pages/Passenger/PassengerDetailsPage.jsx'
+import MyBookings from './pages/Passenger/MyBookings.jsx'
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
 
@@ -40,16 +47,17 @@ function AppContent() {
             <Route path="/signup/passenger" element={<PassengerSignup />} />
             <Route path="/signup/operator" element={<OperatorSignup />} />
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <PassengerDashboardPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Passenger Routes */}
+            <Route path="/passenger/dashboard" element={<ProtectedRoute><PassengerDashboard /></ProtectedRoute>} />
+            <Route path="/passenger/trip/:tripId" element={<ProtectedRoute><TripDetails /></ProtectedRoute>} />
+            <Route path="/passenger/booking/:bookingId" element={<ProtectedRoute><BookingDetails /></ProtectedRoute>} />
+            <Route path="/passenger/profile" element={<ProtectedRoute><PassengerProfile /></ProtectedRoute>} />
+            <Route path="/passenger/search" element={<PassengerSearchResults />} />
+            <Route path="/select-points" element={<BoardingDropPage />} />
+            <Route path="/passenger-details" element={<PassengerDetailsPage />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
 
-           //operator
+
             <Route
               path="/operator"
               element={
@@ -59,11 +67,8 @@ function AppContent() {
               }
             >
               <Route index element={<Navigate to="dashboard" replace />} />
-
               <Route path="dashboard" element={<OperatorDashboard />} />
-
               <Route path="bus-operators" element={<OperatorBusOperators />} />
-
               <Route
                 path="bus-operators/:operatorId/buses"
                 element={<OperatorBuses />}
@@ -76,6 +81,7 @@ function AppContent() {
 
               <Route path="profile" element={<OperatorProfile />} />
             </Route>
+
 
             <Route path="*" element={<Home />} />
 

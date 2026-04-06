@@ -1,6 +1,6 @@
 class Fare::Index < Trailblazer::Operation
   step :find_route
-  step :fetch
+  pass :fetch
 
   def find_route(ctx, params:, **)
     ctx[:route] = Route.find_by(id: params[:route_id])

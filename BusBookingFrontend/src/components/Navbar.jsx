@@ -2,36 +2,41 @@ import { useState } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { logout } from '../api/authApi'
+import { List, HelpCircle, UserCircle } from 'lucide-react'
+import logo from '../assets/logo.png'
 
 export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const { isAuthenticated, user, logout: authLogout } = useAuth()
+
   const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
 
   const hideRoutes = [
-  '/login',
-  '/signup/passenger',
-  '/signup/operator',
-  '/operator/dashboard',
-  '/operator/bus-operators',
-  '/operator/buses',
-  '/operator/profile',
-  '/operator/setting',
-  '/operator/buses/all',
-]
+    '/login',
+    '/signup/passenger',
+    '/signup/operator',
+    '/operator/dashboard',
+    '/operator/bus-operators',
+    '/operator/buses',
+    '/operator/profile',
+    '/operator/setting',
+    '/operator/buses/all',
+  ]
 
-const hideNavbar =
-  hideRoutes.includes(location.pathname) ||
-  /^\/operator\/bus-operators\/\d+\/buses$/.test(location.pathname)
+  const hideNavbar =
+    hideRoutes.includes(location.pathname) ||
+    /^\/operator\/bus-operators\/\d+\/buses$/.test(location.pathname)
 
-if (hideNavbar) return null
+  if (hideNavbar) return null
 
   const handleLogout = async () => {
     setLoading(true)
     try {
       await logout()
       authLogout()
+      setOpen(false)
       navigate('/')
     } catch (error) {
       console.error('Logout error:', error)
@@ -41,11 +46,15 @@ if (hideNavbar) return null
   }
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light ourbus-navbar sticky-top">
+    <nav className="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top py-2 pb-3 pt-3">
       <div className="container-fluid px-4">
-        <Link className="navbar-brand ourbus-brand" to="/">
-          <span className="brand-icon">🚌 </span>
-          <span className="brand-name">OurBus</span>
+
+        <Link className="navbar-brand fw-bold text-dark" to="/">
+          <img
+            src={logo}
+            alt="logo"
+            style={{ width: "250px", height: "50px" }}
+          />
         </Link>
 
         <button
@@ -53,111 +62,93 @@ if (hideNavbar) return null
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto align-items-center gap-2">
-            <li className="nav-item">
-              <Link className="nav-link nav-link-custom" to="/">
-                <span>🏠</span> Home
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <a className="nav-link nav-link-custom" href="#offers">
-                <span>🎟️</span> Offers
-              </a>
-            </li>
+          <div className="navbar-nav ms-auto align-items-lg-center gap-lg-4">
 
             {!isAuthenticated ? (
               <>
-                <li className="nav-item">
-                  <Link className="nav-link nav-link-custom" to="/login">
-                    <span>🔐</span> Login
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <div className="nav-divider"></div>
-                </li>
-                <li className="nav-item dropdown">
-                  <a
-                    className="nav-link nav-link-custom dropdown-toggle"
-                    href="#"
-                    id="signupDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <span>👤</span> Sign Up
-                  </a>
-                  <ul className="dropdown-menu dropdown-menu-custom" aria-labelledby="signupDropdown">
-                    <li>
-                      <Link className="dropdown-item" to="/signup/passenger">
-                        <span>🧑</span> As Passenger
-                      </Link>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/signup/operator">
-                        <span>🏢</span> As Bus Operator
-                      </Link>
-                    </li>
-                  </ul>
-                </li>
+                {/* Login */}
+                <Link
+                  className="nav-link fw-medium text-dark"
+                  to="/login"
+                >
+                  Login
+                </Link>
+
+                {/* Sign Up */}
+                <Link
+                  className="nav-link fw-medium text-dark"
+                  to="/signup/passenger"
+                >
+                  Sign Up
+                </Link>
               </>
             ) : (
               <>
-                <li className="nav-item dropdown">
-                  <a
-                    className="nav-link nav-link-custom dropdown-toggle user-menu"
-                    href="#"
-                    id="userDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+                {/* Bookings */}
+                <Link
+                  className="nav-link d-flex align-items-center gap-2 text-dark"
+                  to="/my-bookings"
+                >
+                  <List size={20} />
+                  <span className="fw-medium">Bookings</span>
+                </Link>
+
+                {/* Help */}
+                <Link
+                  className="nav-link d-flex align-items-center gap-2 text-dark"
+                  to="/help"
+                >
+                  <HelpCircle size={20} />
+                  <span className="fw-medium">Help</span>
+                </Link>
+
+                {/* Account Dropdown */}
+                <div className="nav-item dropdown position-relative">
+                  <button
+                    className="nav-link btn d-flex align-items-center gap-2 text-dark"
+                    onClick={() => setOpen(!open)}
                   >
-                    <span>👤</span> {user?.name || 'Account'}
-                  </a>
-                  <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom" aria-labelledby="userDropdown">
-                    <li>
-                      <span className="dropdown-header">
-                        <strong>{user?.name}</strong>
-                        <br />
-                        <small className="text-muted">{user?.email}</small>
-                      </span>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/dashboard">
-                        <span>📊</span> Dashboard
-                      </Link>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <button
-                        className="dropdown-item text-danger"
-                        onClick={handleLogout}
-                        disabled={loading}
-                      >
-                        <span>🚪</span> {loading ? 'Logging out...' : 'Logout'}
-                      </button>
-                    </li>
-                  </ul>
-                </li>
+                    <UserCircle size={24} />
+                    <span className="fw-medium">Account</span>
+                  </button>
+
+                  {open && (
+                    <ul
+                      className="dropdown-menu show dropdown-menu-end shadow border-0 mt-2"
+                      style={{ position: "absolute", right: 0 }}
+                    >
+                      <li className="px-3 py-2 small text-muted border-bottom">
+                        {user?.name || 'User'}
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item"
+                          to="/profile"
+                          onClick={() => setOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item text-danger"
+                          onClick={handleLogout}
+                          disabled={loading}
+                        >
+                          {loading ? 'Logging out...' : 'Logout'}
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
               </>
             )}
-          </ul>
+          </div>
         </div>
       </div>
     </nav>

@@ -16,22 +16,19 @@ export default function Home() {
           <p className="lead mb-5" style={{ color: '#e8f0fe', fontSize: '1.3rem' }}>
             Easy Bus Booking, Trusted Operators
           </p>
-          <BusChase/>
-          {!isAuthenticated ? (
-            <div className="d-flex gap-3 justify-content-center flex-wrap mt-4">
-              <Link to="/login" className="btn btn-light btn-lg fw-600" style={{ minWidth: '150px' }}>
-                Login
-              </Link>
-              <Link to="/signup/passenger" className="btn btn-outline-light btn-lg fw-600" style={{ minWidth: '150px' }}>
-                Book Tickets
-              </Link>
-            </div>
-          ) : (
+          <BusChase />
+          {isAuthenticated && (
             <div>
-              <p className="mb-4" style={{ color: '#e8f0fe', fontSize: '1.1rem' }}>Welcome back, <strong>{user?.name}</strong>!</p>
-              <Link to="operator/dashboard" className="btn btn-warning btn-lg fw-600" style={{ minWidth: '200px' }}>
-                Go to Dashboard →
-              </Link>
+              <p className="mb-4">Welcome back, <strong>{user?.name}</strong>!</p>
+              {user?.role === 'operator' ? (
+                <Link to="/operator/dashboard" className="btn btn-warning btn-lg fw-600">
+                  Operator Dashboard →
+                </Link>
+              ) : (
+                <Link to="/passenger/dashboard" className="btn btn-info btn-lg fw-600">
+                  Book Your Trip →
+                </Link>
+              )}
             </div>
           )}
         </div>

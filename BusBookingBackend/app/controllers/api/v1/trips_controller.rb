@@ -91,36 +91,59 @@ module Api
         }, status: :ok
       end
 
+      def stops
+        trip = Trip.find(params[:id])
+        stops = trip.route.route_stops.pluck(:city_name).uniq
+        render json:{stops: stops}, status: :ok
+      end
+
       private
 
       def serialize_trip(trip)
-        {
-          id:               trip.id,
-          travel_start_date: trip.travel_start_date,
-          departure_time:   trip.departure_time,
-          arrival_time:     trip.arrival_time,
-          status:           trip.status,
-          available_seats:  trip.available_seats,
-          bus: {
-            id:       trip.bus.id,
-            bus_name: trip.bus.bus_name,
-            bus_type: trip.bus.bus_type,
-            bus_no:   trip.bus.bus_no,
-            deck:     trip.bus.deck
-          },
-          route: {
-            id:               trip.route.id,
-            source_city:      trip.route.source_city,
-            destination_city: trip.route.destination_city,
-            distance_km:      trip.route.total_distance_km
-          },
-          operator: {
-            id:           trip.bus.bus_operator.id,
-            company_name: trip.bus.bus_operator.company_name
-          },
-          created_at: trip.created_at
-        }
-      end
+  {
+    id:               trip.id,
+    travel_start_date: trip.travel_start_date,
+    departure_time:   trip.departure_time,
+    arrival_time:     trip.arrival_time,
+    status:           trip.status,
+    available_seats:  trip.available_seats,
+    bus: {
+      id:       trip.bus.id,
+      bus_name: trip.bus.bus_name,
+      bus_type: trip.bus.bus_type,
+      bus_no:   trip.bus.bus_no,
+      deck:     trip.bus.deck
+    },
+    route: {
+  id:               trip.route.id,
+  source_city:      trip.route.source_city,
+  destination_city: trip.route.destination_city,
+  distance_km:      trip.route.total_distance_km,
+  route_stops:      trip.route.route_stops.ordered.map { |s|
+    {
+      id:             s.id,
+      city_name:      s.city_name,
+      stop_name:      s.stop_name,
+      stop_order:     s.stop_order,
+      km_from_source: s.km_from_source,
+      is_boarding_point: s.is_boarding_point,
+      is_drop_point:     s.is_drop_point
+    }
+  }
+},
+    operator: {
+      id:           trip.bus.bus_operator.id,
+      company_name: trip.bus.bus_operator.company_name
+    },
+    created_at: trip.created_at,
+    trip_seats: trip.trip_seats.map { |ts|
+      {
+        id:         ts.id,
+        seat_price: ts.seat_price
+      }
+    }
+  }
+end
 
       def serialize_trip_detail(trip)
         serialize_trip(trip).merge(

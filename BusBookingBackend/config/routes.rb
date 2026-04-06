@@ -33,6 +33,7 @@ Rails.application.routes.draw do
           patch :cancel
           get   :boarding_points
           get   :drop_points
+          get   :stops
         end
         collection do
           get :search
