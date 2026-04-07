@@ -7,23 +7,23 @@ gem "pg"
 gem "devise"
 gem "devise-jwt"
 
-gem 'pundit'
+gem "pundit"
 
-gem 'rack-cors'
+gem "rack-cors"
 
-gem 'trailblazer-rails'
-gem 'trailblazer-operation'
-gem 'reform'
-gem 'reform-rails'
+gem "trailblazer-rails"
+gem "trailblazer-operation"
+gem "reform"
+gem "reform-rails"
 
 gem "dotenv-rails"
 # Serialization
-gem 'jsonapi-serializer'
+gem "jsonapi-serializer"
 
 # Utilities
-gem 'pagy'          
-gem 'money-rails'  
-gem 'phonelib'      
+gem "pagy"
+gem "money-rails"
+gem "phonelib"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -72,19 +72,24 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-  gem 'faker'
+   gem 'pry'
+  gem 'pry-rails'
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  gem 'annotate'
-  gem 'rubocop-rails'
+  gem "annotate"
+  gem "rubocop-rails"
 end
 
 group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-  
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "trailblazer-test"
+  gem "shoulda-matchers"
+  gem "database_cleaner-active_record"
 end
+
+

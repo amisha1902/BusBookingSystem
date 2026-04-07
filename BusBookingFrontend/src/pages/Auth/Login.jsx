@@ -79,14 +79,28 @@ export default function Login() {
 
       authLogin(userData)
 
+      authLogin(userData)
+
       setAlert({
         type: 'success',
         message: 'Login successful! Redirecting...',
       })
 
       setTimeout(() => {
-        const redirectPath = userData.role === 'operator' ? '/operator/dashboard' : '/dashboard'
-        navigate(redirectPath)
+        const role = response.user.role 
+
+        if (role === 'passenger') {
+          navigate('/')
+        }
+        else if (role === 'operator') {
+          navigate('/operator/dashboard')
+        }
+        else if (role === 'admin') {
+          navigate('/admin/dashboard')
+        }
+        else {
+          navigate('/')
+        }
       }, 1500)
     } catch (error) {
       setAlert({
@@ -122,9 +136,8 @@ export default function Login() {
                     <label className="form-label fw-500">Email Address</label>
                     <input
                       type="email"
-                      className={`form-control form-control-lg ${
-                        errors.email ? 'is-invalid' : ''
-                      }`}
+                      className={`form-control form-control-lg ${errors.email ? 'is-invalid' : ''
+                        }`}
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
@@ -141,9 +154,8 @@ export default function Login() {
                     <label className="form-label fw-500">Password</label>
                     <input
                       type="password"
-                      className={`form-control form-control-lg ${
-                        errors.password ? 'is-invalid' : ''
-                      }`}
+                      className={`form-control form-control-lg ${errors.password ? 'is-invalid' : ''
+                        }`}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
@@ -187,11 +199,12 @@ export default function Login() {
                 </Link>
               </div>
 
-              <p className="text-center text-muted mt-3">
+              {/* <p className="text-center text-muted mt-3">
                 <Link to="/" className="text-decoration-none">
                   Back to Home
                 </Link>
-              </p>
+              </p> */}
+
             </div>
           </div>
         </div>

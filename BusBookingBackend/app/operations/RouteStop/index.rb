@@ -10,9 +10,7 @@ class RouteStop::Index < Trailblazer::Operation
 
   def fetch(ctx, params:, **)
     stops = ctx[:route].route_stops.ordered
-    # find by city
     stops = stops.where(city_name: params[:city]) if params[:city].present?
-    # filter by boarding and dfrop points
     stops = stops.boarding_points if params[:boarding].present?
     stops = stops.drop_points     if params[:drop].present?
     ctx[:models] = stops

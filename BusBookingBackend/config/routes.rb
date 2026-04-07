@@ -3,14 +3,34 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      namespace :admin do
+        resources :users, only: [:index, :show, :update, :destroy] do
+          member do
+            patch :update_status
+          end
+        end
+        resources :bus_operators do
+          member do
+            patch :verify
+          end
+        end
+        resources :routes do
+          resources :route_stops, only: [:index, :create, :update, :destroy]
+        end
+        resources :trips do
+          member do
+            patch :cancel
+          end
+        end
+      end
       namespace :auth do
-        post   'passenger/register', to: 'passenger_registrations#create'
-        post   'operator/register',  to: 'operator_registrations#create'
-        post   'sign_in',            to: 'sessions#create'
-        delete 'sign_out',           to: 'sessions#destroy'
+        post "passenger/register", to: "passenger_registrations#create"
+        post "operator/register", to: "operator_registrations#create"
+        post "sign_in", to: "sessions#create"
+        delete "sign_out", to: "sessions#destroy"
       end
 
-      get 'buses/all', to: 'buses#all_for_operator'
+      get "buses/all", to: "buses#all_for_operator"
 
       resources :bus_operators, only: [:index, :create, :show, :update, :destroy] do
         resources :buses, only: [:index, :create, :show, :update, :destroy] do
@@ -25,14 +45,15 @@ Rails.application.routes.draw do
 
       resources :routes, only: [:index, :create, :show, :update] do
         resources :route_stops, only: [:index, :create]
-        resources :fares,       only: [:index, :create]
+        resources :fares, only: [:index, :create]
       end
 
       resources :trips, only: [:index, :create, :show] do
         member do
           patch :cancel
-          get   :boarding_points
-          get   :drop_points
+          get :boarding_points
+          get :drop_points
+          get :stops
         end
         collection do
           get :search

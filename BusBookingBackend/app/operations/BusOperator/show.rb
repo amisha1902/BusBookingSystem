@@ -1,5 +1,6 @@
 class BusOperator::Show < Trailblazer::Operation
   step :find_model
+  fail :return_not_found, fail_fast: true
   step :authorize_user
 
   def find_model(ctx, params:, **)
@@ -16,6 +17,9 @@ class BusOperator::Show < Trailblazer::Operation
     false
   end
 
+  def return_not_found(ctx, **)
+    ctx[:response] = { error: "Bus operator not found" }
+    
   def authorize_user(ctx, current_user:, **)
     unless current_user&.id == ctx[:model].user_id || current_user&.admin?
       ctx[:model].errors.add(:base, "You do not have permission to view this operator")

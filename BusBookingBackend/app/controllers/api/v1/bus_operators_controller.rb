@@ -1,12 +1,11 @@
 module Api
   module V1
     class BusOperatorsController < BaseController
-
       def index
         result = BusOperator::Index.call(current_user: current_user)
         render json: {
-          message: 'Bus operators fetched successfully',
-          data: result[:models].map { |bo| serialize_bus_operator(bo) }
+          message: "Bus operators fetched successfully",
+          data: result[:models].map { |bo| serialize_bus_operator(bo) },
         }, status: :ok
       end
 
@@ -14,13 +13,13 @@ module Api
         result = BusOperator::Show.call(params: params, current_user: current_user)
         if result.success?
           render json: {
-            message: 'Bus operator fetched successfully',
-            data: serialize_bus_operator(result[:model])
+            message: "Bus operator fetched successfully",
+            data: serialize_bus_operator(result[:model]),
           }, status: :ok
         else
           render json: {
-            message: 'Failed to fetch bus operator',
-            errors: result[:model].errors.full_messages
+            message: "Failed to fetch bus operator",
+            errors: result[:model].errors.full_messages,
           }, status: :unprocessable_entity
         end
       end
@@ -29,13 +28,13 @@ module Api
         result = BusOperator::Create.call(params: params, current_user: current_user)
         if result.success?
           render json: {
-            message: 'Bus operator created successfully',
-            data: serialize_bus_operator(result[:model])
+            message: "Bus operator created successfully",
+            data: serialize_bus_operator(result[:model]),
           }, status: :created
         else
           render json: {
-            message: 'Failed to create bus operator',
-            errors: result[:model].errors.full_messages
+            message: "Failed to create bus operator",
+            errors: result[:model].errors.full_messages,
           }, status: :unprocessable_entity
         end
       end
@@ -44,13 +43,13 @@ module Api
         result = BusOperator::Update.call(params: params, current_user: current_user)
         if result.success?
           render json: {
-            message: 'Bus operator updated successfully',
-            data: serialize_bus_operator(result[:model])
+            message: "Bus operator updated successfully",
+            data: serialize_bus_operator(result[:model]),
           }, status: :ok
         else
           render json: {
-            message: 'Failed to update bus operator',
-            errors: result[:model].errors.full_messages
+            message: "Failed to update bus operator",
+            errors: result[:model].errors.full_messages,
           }, status: :unprocessable_entity
         end
       end
@@ -58,12 +57,31 @@ module Api
       def destroy
         result = BusOperator::Destroy.call(params: params, current_user: current_user)
         if result.success?
-          render json: { message: 'Bus operator deleted successfully' }, status: :ok
+          render json: { message: "Bus operator deleted successfully" }, status: :ok
         else
           render json: {
-            message: 'Failed to delete bus operator',
-            errors: result[:model].errors.full_messages
+            message: "Failed to delete bus operator",
+            errors: result[:model].errors.full_messages,
           }, status: :unprocessable_entity
+        end
+      end
+
+      def verify
+        bus_operator = BusOperator.find(params[:id])
+        authorize bus_operator, :verify?
+        if bus_operator.update(
+          is_verified: true,
+          verified_at: Time.current,
+        )
+          render json: {
+                   message: "Bus operator verified successfully",
+                   data: serialize_bus_operator(bus_operator),
+                 }, status: :ok
+        else
+          render json: {
+                   message: "Failed to verify bus operator",
+                   errors: bus_operator.errors.full_messages,
+                 }, status: :unprocessable_entity
         end
       end
 
@@ -75,18 +93,18 @@ module Api
 
       def serialize_bus_operator(bo)
         {
-          id:            bo.id,
-          company_name:  bo.company_name,
-          license_no:    bo.license_no,
+          id: bo.id,
+          company_name: bo.company_name,
+          license_no: bo.license_no,
           contact_email: bo.contact_email,
-          is_verified:   bo.is_verified,
-          verified_at:   bo.verified_at,
+          is_verified: bo.is_verified,
+          verified_at: bo.verified_at,
           owner: {
-            id:    bo.user.id,
-            name:  bo.user.name,
-            email: bo.user.email
+            id: bo.user.id,
+            name: bo.user.name,
+            email: bo.user.email,
           },
-          created_at: bo.created_at
+          created_at: bo.created_at,
         }
       end
     end

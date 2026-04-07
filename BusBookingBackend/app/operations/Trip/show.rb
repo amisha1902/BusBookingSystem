@@ -3,7 +3,7 @@ class Trip::Show < Trailblazer::Operation
   step :authorize
 
   def find_model(ctx, params:, **)
-    ctx[:model] = Trip.includes(:bus, :route, :trip_seats, bus: :bus_operator)
+    ctx[:model] = Trip.includes(:bus, :route, :trip_seats, bus: :bus_operator, route: :route_stops )
                       .find_by(id: params[:id])
     ctx[:errors] = { trip: 'not found' } and return false unless ctx[:model]
     true

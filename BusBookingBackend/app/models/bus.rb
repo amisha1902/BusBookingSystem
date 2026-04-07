@@ -5,19 +5,25 @@ class Bus < ApplicationRecord
   before_save :normalize_bus_type
 
   BUS_TYPES = %w[ac_seater non_ac_seater ac_sleeper non_ac_sleeper].freeze
-  
+
   enum :bus_type, {
-    ac_seater: 'ac_seater',
-    non_ac_seater: 'non_ac_seater',
-    ac_sleeper: 'ac_sleeper',
-    non_ac_sleeper: 'non_ac_sleeper'
+    ac_seater: "ac_seater",
+    non_ac_seater: "non_ac_seater",
+    ac_sleeper: "ac_sleeper",
+    non_ac_sleeper: "non_ac_sleeper",
   }, prefix: false
-  
-  validates :bus_no, :bus_name, :bus_type, :deck, presence: true
+
+  validates :bus_no, :bus_name, :bus_type, presence: true
   validates :bus_no, uniqueness: true
+  validates :deck, numericality: {
+           only_integer: true,
+           greater_than: 0,
+         }
   scope :active, -> { where(is_active: true) }
+
   private
+
   def normalize_bus_type
-  self.bus_type = bus_type.to_s.downcase.strip
+    self.bus_type = bus_type.to_s.downcase.strip
   end
 end
