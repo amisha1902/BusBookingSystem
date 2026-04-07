@@ -23,6 +23,7 @@ export default function Navbar() {
     '/operator/profile',
     '/operator/setting',
     '/operator/buses/all',
+    '/admin/dashboard'
   ]
 
   const hideNavbar =
@@ -31,19 +32,11 @@ export default function Navbar() {
 
   if (hideNavbar) return null
 
-  const handleLogout = async () => {
-    setLoading(true)
-    try {
-      await logout()
-      authLogout()
-      setOpen(false)
-      navigate('/')
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   return (
     <nav className="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top py-2 pb-3 pt-3">

@@ -40,8 +40,10 @@ class Bus::Create < Trailblazer::Operation
   def assign_attributes(ctx, params:, **)
     begin
       permitted = params.dig(:bus)&.permit(*PERMITTED_PARAMS) || {}
-      clean_params = permitted.to_h.reject { |_, v| v.nil? || v.to_s.empty? }
-      clean_params['deck'] = (clean_params['deck'] || 1).to_i
+      clean_params = permitted.to_h.symbolize_keys
+        .reject { |_, v| v.nil? || v.to_s.empty? }
+
+      clean_params[:deck] = (clean_params[:deck] || 1).to_i
       ctx[:model].assign_attributes(clean_params)
       true
     rescue StandardError => e
@@ -51,18 +53,22 @@ class Bus::Create < Trailblazer::Operation
   end
 
   def calculate_total_seats(ctx, **)
-    bus_type = ctx[:model].bus_type&.to_sym
-    deck_count = ctx[:model].deck&.to_i || 1
+    bus = ctx[:model]
+
+    bus_type = bus.bus_type&.to_sym
+    deck_count = bus.deck&.to_i || 1
 
     layout = SeatLayoutGenerator::SEAT_LAYOUTS[bus_type]
-    if layout
-      cols = layout[:cols]
-      rows = layout[:rows]
-      ctx[:model].total_seats = rows * cols * deck_count
-    else
-      ctx[:model].errors.add(:bus_type, "is invalid")
+
+    unless layout
+      bus.errors.add(:bus_type, "is invalid")
       return false
     end
+
+    cols = layout[:cols]
+    rows = layout[:rows]
+
+    bus.total_seats = rows * cols * deck_count
     true
   end
 

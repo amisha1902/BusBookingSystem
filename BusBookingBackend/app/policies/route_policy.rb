@@ -1,10 +1,7 @@
 class RoutePolicy < ApplicationPolicy
-  # only admin can create/update/delete routes
   def create?  = user.admin? || user.operator?
   def update?  = user.admin? || user.operator?
   def destroy? = user.admin? || user.operator?
-
-  # everyone can view routes
   def show?  = true
   def index? = true
 

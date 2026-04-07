@@ -79,13 +79,28 @@ export default function Login() {
 
       authLogin(userData)
 
+      authLogin(userData)
+
       setAlert({
         type: 'success',
         message: 'Login successful! Redirecting...',
       })
 
       setTimeout(() => {
-        navigate('/')
+        const role = response.user.role 
+
+        if (role === 'passenger') {
+          navigate('/')
+        }
+        else if (role === 'operator') {
+          navigate('/operator/dashboard')
+        }
+        else if (role === 'admin') {
+          navigate('/admin/dashboard')
+        }
+        else {
+          navigate('/')
+        }
       }, 1500)
     } catch (error) {
       setAlert({
@@ -184,11 +199,12 @@ export default function Login() {
                 </Link>
               </div>
 
-              <p className="text-center text-muted mt-3">
+              {/* <p className="text-center text-muted mt-3">
                 <Link to="/" className="text-decoration-none">
                   Back to Home
                 </Link>
-              </p>
+              </p> */}
+
             </div>
           </div>
         </div>

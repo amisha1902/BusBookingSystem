@@ -130,7 +130,7 @@ export default function Footer() {
         <div className="d-flex justify-content-between align-items-center flex-wrap">
 
           <p className="small text-muted mb-0">
-            © {currentYear} MAKEMYTRIP (INDIA) PRIVATE LIMITED. All rights reserved
+            © {currentYear} OURBUS (INDIA) PRIVATE LIMITED. All rights reserved
           </p>
 
           <div className="fs-5 d-flex gap-3">
